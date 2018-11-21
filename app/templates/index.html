@@ -1,1 +1,51 @@
 {% extends "base.html" %}
+
+{% block content %}
+{{super()}}
+<div class="col-sm-12 col-md-10 offset-md-1">
+  <div class="row">
+    <div class="col-sm-12 col-md-6 mb-3">
+      <img class="w-100" src="{{ url_for('main.video_feed') }}">
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <!-- BEGIN directory -->
+      <div class="list-inline">
+
+        <div class="list-inline-item">
+          Save images to
+        </div>
+
+        <div class="list-inline-item">
+          <input type="text" placeholder="directory name" id="directory">
+        </div>
+
+        <div class="list-inline-item">
+          <button id="button-directory" type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+        </div>
+
+      </div>
+      <!-- END directory -->
+
+      <hr>
+
+      <!-- BEGIN self-driving -->
+      <div class="list-inline">
+
+        <div class="list-inline-item">
+          Self-driving
+        </div>
+
+        <div class="list-inline-item">
+          <button id="button-self-driving" type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+        </div>
+
+      </div>
+      <!-- END directory -->
+
+      <hr>
+
+
+    </div>
+  </div>
+</div>
+{% endblock %}

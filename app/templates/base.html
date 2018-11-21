@@ -1,50 +1,39 @@
 {% extends "bootstrap/base.html" %}
-{% import "bootstrap/fixes.html" as fixes %}
 {% import "bootstrap/utils.html" as util %}
 
 {% block content %}
 {{util.flashed_messages(dismissible=True)}}
+<div class="logo-font mt-4 mb-5">
+  <h1 class="text-center">driverless</h1>
+</div>
 {% endblock %}
 
 {% block head %}
 {{super()}}
-{{fixes.ie8()}}
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
+<link rel="stylesheet/less" href="{{url_for('static', filename='css/beautiful-switch.less')}}">
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
+<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.7.1/less.min.js"></script>
 {% endblock %}
 
 {% block html_attribs %} lang="en"{% endblock %}
 
 {% block navbar %}
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">
-        <img class="logo" src="/static/img/logo-just-car.png" alt="Driverless">
-      </a>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li><a href="{{ url_for('main.manual') }}">Manual</a></li>
-        <li><a href="{{ url_for('main.training') }}">Training</a></li>
-        <li><a href="{{ url_for('main.self_driving') }}">Self-driving</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+<nav class="navbar navbar-expand navbar-light bg-light">
+  <a class="navbar-brand" href="/">
+    <img class="logo" src="{{url_for('static', filename='img/logo-just-car.png')}}" alt="Logo">
+  </a>
+  <div id="driverless-navbar">
+    <ul class="nav navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">About</a></li>
+    </ul>
+  </div>
 </nav>
 {% endblock %}

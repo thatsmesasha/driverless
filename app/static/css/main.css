@@ -1,7 +1,24 @@
+@font-face {
+  font-family: 'SpartanMB';
+  src: URL('../fonts/SpartanMB.otf');
+}
+
 .logo {
   height: 40px;
 }
 
+.logo-font {
+  color: #5a2ab5;
+  font-family: 'SpartanMB';
+}
+
 .navbar-brand {
   padding: 5px 10px 5px 20px;
+}
+
+input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  border-bottom: 1px solid black;
 }
