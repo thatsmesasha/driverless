@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('static', filename='js/controls.js')}}"></script>
+{% endblock %}
+
 {% block content %}
 {{super()}}
 <div class="col-sm-12 col-md-10 offset-md-1">
@@ -44,7 +49,11 @@
 
       <hr>
 
+      You can control the car using controls below or arrow keys and space (for stop) on the keyboard.
 
+      <div class="col-md-8 col-sm-12">
+        {% include "controls.html" %}
+      </div>
     </div>
   </div>
 </div>

@@ -1,6 +1,7 @@
 import time
 import io
 import threading
+import os
 import picamera
 from PIL import Image
 
@@ -54,12 +55,13 @@ class Camera(object):
                     cls.new_end_recording = None
 
                     # if last label was the same, save all pictures in between
-                    if cls.label == cls.new_label:
+                    if cls.label == cls.new_label and cls.folder:
                         for timestamp, frame in cls.frames:
-                            cls.save(timestamp, frame, cls.label)
+                            cls.save(timestamp, frame, cls.label, cls.folder)
 
                     # save first picture when driving started
-                    cls.save(time.time(), cls.frame, cls.new_label)
+                    if cls.folder:
+                        cls.save(time.time(), cls.frame, cls.new_label, cls.folder)
                     cls.frames = []
 
                     cls.label = cls.new_label
@@ -79,6 +81,9 @@ class Camera(object):
         cls.thread = None
 
     @classmethod
-    def save(cls, timestamp, frame, label):
-        filename = str(int(timestamp * 1000)) + '.jpeg'
+    def save(cls, timestamp, frame, label, foldername):
+        directory = os.path.join(os.getcwd(), foldername, label)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        filename = os.path.join(directory, str(int(timestamp * 1000)) + '.jpeg')
         Image.open(frame).save(filename)
