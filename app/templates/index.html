@@ -3,6 +3,7 @@
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('static', filename='js/controls.js')}}"></script>
+<script src="{{url_for('static', filename='js/update-settings.js')}}"></script>
 {% endblock %}
 
 {% block content %}
@@ -13,6 +14,11 @@
       <img class="w-100" src="{{ url_for('main.video_feed') }}">
     </div>
     <div class="col-sm-12 col-md-6">
+      <h4>Driving <span class="badge badge-secondary">{{ 'Connected' if car_connected else 'Not connected'}}</span></h4>
+      <h4>Camera <span class="badge badge-secondary">{{ 'Connected' if camera_connected else 'Not connected'}}</span></h4>
+
+      <hr>
+
       <!-- BEGIN directory -->
       <div class="list-inline">
 
@@ -21,7 +27,7 @@
         </div>
 
         <div class="list-inline-item">
-          <input type="text" placeholder="directory name" id="directory">
+          <input class="text-input" type="text" placeholder="directory name" id="directory">
         </div>
 
         <div class="list-inline-item">
@@ -49,11 +55,48 @@
 
       <hr>
 
-      You can control the car using controls below or arrow keys and space (for stop) on the keyboard.
+      <p>You can control the car using arrow keys (forward, back, right, left) and space (stop) on the keyboard.</p>
 
-      <div class="col-md-8 col-sm-12">
-        {% include "controls.html" %}
-      </div>
+      <form id="update-settings">
+        <table class="table mt-3">
+          <thead>
+            <tr>
+              <th scope="col">Direction</th>
+              <th scope="col">Speed</th>
+              <th scope="col">Steering</th>
+              <th scope="col">Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Forward</th>
+              <td><input name="speed-forward" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('forward', {}).get('speed', 0.00)}}"></td>
+              <td><input name="steering-forward" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('forward', {}).get('steering', 0.00)}}"></td>
+              <td><input name="duration-forward" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('forward', {}).get('duration', 0.00)}}"></td>
+            </tr>
+            <tr>
+              <th scope="row">Left</th>
+              <td><input name="speed-left" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('left', {}).get('speed', 0.00)}}"></td>
+              <td><input name="steering-left" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('left', {}).get('steering', 0.00)}}"></td>
+              <td><input name="duration-left" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('left', {}).get('duration', 0.00)}}"></td>
+            </tr>
+            <tr>
+              <th scope="row">Right</th>
+              <td><input name="speed-right" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('right', {}).get('speed', 0.00)}}"></td>
+              <td><input name="steering-right" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('right', {}).get('steering', 0.00)}}"></td>
+              <td><input name="duration-right" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('right', {}).get('duration', 0.00)}}"></td>
+            </tr>
+            <tr>
+              <th scope="row">Back</th>
+              <td><input name="speed-back" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('back', {}).get('speed', 0.00)}}"></td>
+              <td><input name="steering-back" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('back', {}).get('steering', 0.00)}}"></td>
+              <td><input name="duration-back" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('back', {}).get('duration', 0.00)}}"></td>
+            </tr>
+          </tbody>
+        </table>
+        <input type="submit" class="btn btn-primary" style="background-color: #5a2ab5; border-color: #5a2ab5" value="Update Settings">
+      </form>
+
     </div>
   </div>
 </div>

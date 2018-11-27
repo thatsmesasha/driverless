@@ -24,10 +24,10 @@
 {{super()}}
 <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.7.1/less.min.js"></script>
 <script>
-function addAlert(message) {
-    $('#alerts').append(`
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <strong>Error</strong> ${message}
+function addAlert(message, error=true) {
+  $('#alerts').append(`
+    <div class="alert alert-${error ? 'danger' : 'success'} alert-dismissible fade show" role="alert">
+      <strong>${error ? 'Error' : 'Success'}</strong> ${message}
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>

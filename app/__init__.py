@@ -1,5 +1,8 @@
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
+from .car import Car
+from .main import main as main_blueprint
+from .control import control as control_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -8,17 +11,17 @@ def create_app():
 
     bootstrap = Bootstrap(app)
 
-    from .main import main as main_blueprint
-    from .control import control as control_blueprint
     app.register_blueprint(control_blueprint, url_prefix='/control')
     app.register_blueprint(main_blueprint)
 
-    try:
-        print('Debug initializing the car, this may take several seconds...')
-        from .car import Car
-        Car().initialize()
-        print('Debug initialized the car successfully')
-    except Exception as e:
-        print('Error initializing the car: {}'.format(e))
+    print(' * INFO Initializing the car, this may take several seconds...')
+    Car()
+    if Car.connected:
+        print(' * INFO Initialized the car successfully')
+    else:
+        print(' * INFO Driving is not connected')
 
     return app
+
+if __name__ == '__main__':
+    create_app().run(debug=True, host='0.0.0.0', port=4242)

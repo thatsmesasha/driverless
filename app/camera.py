@@ -2,7 +2,6 @@ import time
 import io
 import threading
 import os
-import picamera
 from PIL import Image
 
 class Camera(object):
@@ -16,8 +15,20 @@ class Camera(object):
     end_recording = None
     new_end_recording = None
 
+    def __init__(self):
+        self.initialize()
+
     def initialize(self):
         if Camera.thread is None:
+            # check if can connect to the camera
+            try:
+                import picamera
+                with picamera.PiCamera() as camera:
+                    pass
+            except:
+                Camera.connected = False
+                return False
+
             # start background frame thread
             Camera.thread = threading.Thread(target=self._thread)
             Camera.thread.start()
@@ -25,6 +36,8 @@ class Camera(object):
             # wait until frames start to be available
             while self.frame is None:
                 time.sleep(0)
+        Camera.connected = True
+        return True
 
     def get_frame(self):
         self.initialize()
@@ -32,6 +45,7 @@ class Camera(object):
 
     @classmethod
     def _thread(cls):
+        import picamera
         with picamera.PiCamera() as camera:
             # camera setup
             camera.resolution = cls.resolution
