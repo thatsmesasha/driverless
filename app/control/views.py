@@ -10,7 +10,6 @@ from ..camera import Camera
 @control.route('/drive', methods=['POST'])
 def drive():
     direction = request.json.get('direction')
-    print('Debug received request to drive in the direction "{}"'.format(direction))
     car = Car()
     if not Car.connected:
         return json.dumps({ 'error': 'Driving is not connected' })
@@ -18,9 +17,10 @@ def drive():
     camera = Camera()
 
     end_driving = car.drive(direction)
+
     if Camera.connected and direction != 'stop':
-        camera.new_end_recording = end_driving
-        camera.new_label = direction
+        folder = request.json.get('foldername', None)
+        camera.add_label(direction, end_driving, folder)
 
     return json.dumps(True)
 

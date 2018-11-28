@@ -4,6 +4,18 @@
 {{super()}}
 <script src="{{url_for('static', filename='js/controls.js')}}"></script>
 <script src="{{url_for('static', filename='js/update-settings.js')}}"></script>
+<script>
+  $("#button-folder").click(function(e) {
+    if ($("#button-folder").attr('aria-pressed') === "false" && !$("#foldername").val()) {
+      return false
+    } else if ($("#button-folder").attr('aria-pressed') === "true") {
+      $("#foldername").prop("disabled", false)
+    } else {
+      $("#foldername").prop("disabled", true)
+    }
+    return true
+  })
+</script>
 {% endblock %}
 
 {% block content %}
@@ -19,7 +31,7 @@
 
       <hr>
 
-      <!-- BEGIN directory -->
+      <!-- BEGIN folder -->
       <div class="list-inline">
 
         <div class="list-inline-item">
@@ -27,15 +39,15 @@
         </div>
 
         <div class="list-inline-item">
-          <input class="text-input" type="text" placeholder="directory name" id="directory">
+          <input class="text-input" type="text" placeholder="folder name" required id="foldername">
         </div>
 
         <div class="list-inline-item">
-          <button id="button-directory" type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+          <button id="button-folder" type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
         </div>
 
       </div>
-      <!-- END directory -->
+      <!-- END folder -->
 
       <hr>
 

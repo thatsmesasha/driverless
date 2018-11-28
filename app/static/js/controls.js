@@ -1,6 +1,10 @@
-function drive(direction) {
+function drive(direction, foldername) {
   const url = '/control/drive'
+
   const data = { direction }
+  if (foldername) {
+    data.foldername = foldername
+  }
 
   fetch(url, {
     method: 'POST',
@@ -30,6 +34,11 @@ document.onkeydown = (e) => {
 
   const direction = directions[e.keyCode]
   if (direction) {
-    drive(direction)
+    if (document.getElementById('button-folder').getAttribute('aria-pressed') === 'true') {
+      foldername = document.getElementById('foldername').value
+      drive(direction, foldername)
+    } else {
+      drive(direction, null)
+    }
   }
 }

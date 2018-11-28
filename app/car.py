@@ -84,6 +84,6 @@ class Car:
                 lambda: Car._drive('stop', canceling_last=True))
             Car.timer_to_stop.start()
 
-            return time.time() + Car.config[direction]['duration']
+            return Car.config[direction]['duration']
 
         return None
