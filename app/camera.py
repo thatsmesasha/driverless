@@ -110,6 +110,10 @@ class Camera(object):
         if Camera.last_label == new_label and folder:
             self.log('INFO', 'Last label was the same, saving {} pictures in between...'.format(len(Camera.frames)))
             Thread(target=lambda: self.save_several(Camera.frames, new_label, folder)).start()
+        elif folder:
+            # switched direction on the car, so save images in between to "unlabeled" category
+            Thread(target=lambda: self.save_several(Camera.frames, 'unlabeled', folder)).start()
+
 
         Camera.last_label = new_label
 
