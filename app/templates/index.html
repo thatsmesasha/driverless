@@ -1,19 +1,64 @@
 {% extends "base.html" %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.css">
+{% endblock %}
+
 {% block scripts %}
 {{super()}}
 <script src="{{url_for('static', filename='js/controls.js')}}"></script>
 <script src="{{url_for('static', filename='js/update-settings.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.js"></script>
 <script>
   $("#button-folder").click(function(e) {
     if ($("#button-folder").attr('aria-pressed') === "false" && !$("#foldername").val()) {
       return false
     } else if ($("#button-folder").attr('aria-pressed') === "true") {
       $("#foldername").prop("disabled", false)
+      $("#folder-container").css('display', 'none')
     } else {
       $("#foldername").prop("disabled", true)
+      $("#folder-container").css('display', 'block')
+      updateFolderStats()
     }
     return true
+  })
+</script>
+<script>
+  $("#button-label").click(function(e) {
+    if ($("#button-label").attr('aria-pressed') === "false" && !$("#labelname").val()) {
+      return false
+    } else if ($("#button-label").attr('aria-pressed') === "true") {
+      $("#labelname").prop("disabled", false)
+    } else {
+      $("#labelname").prop("disabled", true)
+    }
+    return true
+  })
+</script>
+<script>
+  setInterval(() => {
+    if ($("#button-folder").attr('aria-pressed') === "true") {
+      updateFolderStats()
+    }
+  }, 5000)
+
+  function updateFolderStats() {
+    $("#folder-stats").bootstrapTable('refresh', {
+      url: `/control/get-folder-stats?foldername=${$("#foldername").val()}`,
+      silent: true,
+    })
+  }
+</script>
+<script>
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  })
+  $(function () {
+    $('.example-popover').popover({
+      container: 'body'
+    })
   })
 </script>
 {% endblock %}
@@ -47,6 +92,58 @@
         </div>
 
       </div>
+
+      <div class="mt-3" id="folder-container" style="display: none">
+        <hr>
+
+        <div>
+          Learn more about how images are saved
+          <a data-toggle="popover" data-placement="right" data-html="true" title="Saving images" data-content="
+            <p>Each time you press a button to drive in one of the 4 direction, current photo will be saved to
+              the corresponding subfolder.</p>
+            <p>When pressing to drive in the same direction as previous one, images captured in between will also be saved
+              in the same folder. If you change direction of driving, those images will be saved as 'unlabeled' data.</p>
+            <p>You can also save images as specific label no matter in what direction you drive. To do so, specify label
+              below and press the button to activate. It is useful for collecting data for outliers.</p>
+          ">
+            <i class="material-icons">info</i>
+          </a>
+        </div>
+
+        <hr>
+
+        <div>
+          <div class="list-inline">
+
+            <div class="list-inline-item">
+              Save all images as label
+            </div>
+
+            <div class="list-inline-item">
+              <input class="text-input" type="text" placeholder="label" required id="labelname">
+            </div>
+
+            <div class="list-inline-item">
+              <button id="button-label" type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+            </div>
+
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <table class="table table-borderless table-sm" id="folder-stats" data-toggle="table">
+            <thead>
+              <tr>
+                <th scope="col" data-field="direction">Direction</th>
+                <th scope="col" data-field="count">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- END folder -->
 
       <hr>
@@ -63,51 +160,67 @@
         </div>
 
       </div>
-      <!-- END directory -->
+
+      <!-- END self-driving -->
 
       <hr>
 
       <p>You can control the car using arrow keys (forward, back, right, left) and space (stop) on the keyboard.</p>
 
-      <form id="update-settings">
-        <table class="table mt-3">
-          <thead>
-            <tr>
-              <th scope="col">Direction</th>
-              <th scope="col">Speed</th>
-              <th scope="col">Steering</th>
-              <th scope="col">Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Forward</th>
-              <td><input name="speed-forward" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('forward', {}).get('speed', 0.00)}}"></td>
-              <td><input name="steering-forward" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('forward', {}).get('steering', 0.00)}}"></td>
-              <td><input name="duration-forward" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('forward', {}).get('duration', 0.00)}}"></td>
-            </tr>
-            <tr>
-              <th scope="row">Left</th>
-              <td><input name="speed-left" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('left', {}).get('speed', 0.00)}}"></td>
-              <td><input name="steering-left" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('left', {}).get('steering', 0.00)}}"></td>
-              <td><input name="duration-left" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('left', {}).get('duration', 0.00)}}"></td>
-            </tr>
-            <tr>
-              <th scope="row">Right</th>
-              <td><input name="speed-right" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('right', {}).get('speed', 0.00)}}"></td>
-              <td><input name="steering-right" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('right', {}).get('steering', 0.00)}}"></td>
-              <td><input name="duration-right" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('right', {}).get('duration', 0.00)}}"></td>
-            </tr>
-            <tr>
-              <th scope="row">Back</th>
-              <td><input name="speed-back" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('back', {}).get('speed', 0.00)}}"></td>
-              <td><input name="steering-back" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('back', {}).get('steering', 0.00)}}"></td>
-              <td><input name="duration-back" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('back', {}).get('duration', 0.00)}}"></td>
-            </tr>
-          </tbody>
-        </table>
-        <input type="submit" class="btn btn-primary" style="background-color: #5a2ab5; border-color: #5a2ab5" value="Update Settings">
-      </form>
+      <button type="button" class="btn btn-primary" style="background-color: #5a2ab5; border-color: #5a2ab5" data-toggle="modal" data-target="#modal-settings">
+        Change car settings
+      </button>
+
+      <div class="modal fade" id="modal-settings" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <form id="update-settings">
+              <div class="modal-body">
+                <table class="table table-borderless">
+                  <thead>
+                    <tr>
+                      <th scope="col">Direction</th>
+                      <th scope="col">Speed</th>
+                      <th scope="col">Steering</th>
+                      <th scope="col">Duration</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Forward</th>
+                      <td><input name="speed-forward" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('forward', {}).get('speed', 0.00)}}"></td>
+                      <td><input name="steering-forward" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('forward', {}).get('steering', 0.00)}}"></td>
+                      <td><input name="duration-forward" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('forward', {}).get('duration', 0.00)}}"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Left</th>
+                      <td><input name="speed-left" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('left', {}).get('speed', 0.00)}}"></td>
+                      <td><input name="steering-left" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('left', {}).get('steering', 0.00)}}"></td>
+                      <td><input name="duration-left" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('left', {}).get('duration', 0.00)}}"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Right</th>
+                      <td><input name="speed-right" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('right', {}).get('speed', 0.00)}}"></td>
+                      <td><input name="steering-right" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('right', {}).get('steering', 0.00)}}"></td>
+                      <td><input name="duration-right" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('right', {}).get('duration', 0.00)}}"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Back</th>
+                      <td><input name="speed-back" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('back', {}).get('speed', 0.00)}}"></td>
+                      <td><input name="steering-back" class="text-input" type="number" step="0.01" min="-1" max="1" title="Float value between -1 and 1" value="{{ config.get('back', {}).get('steering', 0.00)}}"></td>
+                      <td><input name="duration-back" class="text-input" type="number" step="0.01" min="0" max="5" title="Float value between 0 and 5" value="{{ config.get('back', {}).get('duration', 0.00)}}"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="button-submit-settings" type="submit" class="btn btn-primary" style="background-color: #5a2ab5; border-color: #5a2ab5">Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>

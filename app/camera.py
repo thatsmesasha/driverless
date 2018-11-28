@@ -82,7 +82,7 @@ class Camera(object):
     @staticmethod
     def save(timestamp, frame, label, foldername):
         # save to root
-        directory = os.path.join(str(Path(os.path.dirname(__file__)).parent), foldername, label)
+        directory = os.path.join(str(Path(os.path.dirname(__file__)).parent), 'data', foldername, label)
         if not os.path.exists(directory):
             os.makedirs(directory)
         filename = os.path.join(directory, str(int(timestamp * 1000)) + '.jpeg')

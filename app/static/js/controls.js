@@ -1,9 +1,12 @@
-function drive(direction, foldername) {
+function drive(direction, foldername, label) {
   const url = '/control/drive'
 
   const data = { direction }
   if (foldername) {
     data.foldername = foldername
+  }
+  if (label) {
+    data.label = label
   }
 
   fetch(url, {
@@ -19,6 +22,7 @@ function drive(direction, foldername) {
     }
   })
   .catch(error => console.error('Error:', error))
+  setTimeout(updateFolderStats, 1000)
 }
 
 document.onkeydown = (e) => {
@@ -34,11 +38,15 @@ document.onkeydown = (e) => {
 
   const direction = directions[e.keyCode]
   if (direction) {
+    let foldername = null
+    let label = null
+
     if (document.getElementById('button-folder').getAttribute('aria-pressed') === 'true') {
       foldername = document.getElementById('foldername').value
-      drive(direction, foldername)
-    } else {
-      drive(direction, null)
     }
+    if (document.getElementById('button-label').getAttribute('aria-pressed') === 'true') {
+      label = document.getElementById('labelname').value
+    }
+    drive(direction, foldername, label)
   }
 }

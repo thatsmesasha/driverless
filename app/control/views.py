@@ -20,14 +20,13 @@ def drive():
 
     if Camera.connected and direction != 'stop':
         folder = request.json.get('foldername', None)
-        camera.add_label(direction, end_driving, folder)
+        label = request.json.get('label', direction)
+        camera.add_label(label, end_driving, folder)
 
     return json.dumps(True)
 
 @control.route('/update-settings', methods=['POST'])
 def update_settings():
-    print(request.form)
-
     config = {
         'forward': {
             'speed': float(request.form['speed-forward']),
@@ -63,3 +62,19 @@ def update_settings():
     Car.load_config()
 
     return json.dumps(True)
+
+@control.route('/get-folder-stats', methods=['GET'])
+def get_folder_stats():
+    foldername = request.args.get('foldername')
+    directory = os.path.join(str(Path(os.path.dirname(__file__)).parent.parent), 'data', foldername)
+    if not os.path.exists(directory):
+        return json.dumps([])
+
+    stats = []
+    for label in [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]:
+        stats.append({
+            'direction': label,
+            'count': len(os.listdir(os.path.join(directory, label))),
+        })
+
+    return json.dumps(stats)

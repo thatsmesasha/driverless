@@ -1,3 +1,7 @@
+$("#button-submit-settings").on("click", function () {
+  $('#modal-settings').modal('hide')
+})
+
 $('#update-settings').submit(function (evt) {
   evt.preventDefault(); //prevents the default action
 
