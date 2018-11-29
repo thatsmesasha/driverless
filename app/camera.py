@@ -75,10 +75,6 @@ class Camera(object):
                 stream.seek(0)
                 stream.truncate()
 
-    @classmethod
-    def thread_stop(cls):
-        cls.thread = None
-
     @staticmethod
     def save(timestamp, frame, label, foldername):
         # save to root

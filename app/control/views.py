@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from ..car import Car
 from ..camera import Camera
+from ..model import Model
 
 @control.route('/drive', methods=['POST'])
 def drive():
@@ -24,6 +25,20 @@ def drive():
         camera.add_label(label, end_driving, folder)
 
     return json.dumps(True)
+
+@control.route('/self-drive', methods=['POST'])
+def self_drive():
+    on = request.json.get('on')
+
+    model = Model()
+    if on:
+        model.start()
+    else:
+        model.end()
+
+    return json.dumps(True)
+
+
 
 @control.route('/update-settings', methods=['POST'])
 def update_settings():
