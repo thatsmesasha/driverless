@@ -1,9 +1,11 @@
-from flask import render_template, request, json, Response, send_from_directory
+from flask import render_template, request, json, Response, send_file, send_from_directory, abort
 from . import control
 import time
 import json
 import os
 from pathlib import Path
+import zipfile
+import io
 from ..car import Car
 from ..camera import Camera
 from ..model import Model
@@ -65,7 +67,7 @@ def update_settings():
         },
         'stop': {
             'speed': 0,
-            'steering': 0,
+            'steering': float(request.form['steering-forward']),
             'duration': 0,
         },
     }
@@ -93,3 +95,29 @@ def get_folder_stats():
         })
 
     return json.dumps(stats)
+
+def zipfolder(foldername, path):
+    data = io.BytesIO()
+    with zipfile.ZipFile(data, mode='w') as z:
+        for label in Path(path).iterdir():
+            label_relative_folder = os.path.join(foldername, label.name)
+            z.write(str(label), label_relative_folder)
+            for image in label.iterdir():
+                z.write(str(image), os.path.join(label_relative_folder, image.name))
+    data.seek(0)
+    return data
+
+@control.route('/get-folder-zip', methods=['GET'])
+def get_folder_zip():
+    foldername = request.args.get('foldername')
+    folderpath = os.path.join(str(Path(os.path.dirname(__file__)).parent.parent), 'data', foldername)
+    if not os.path.exists(folderpath):
+        abort(404, 'folder does not exist')
+
+    zip = zipfolder(foldername, folderpath)
+    return send_file(
+        zip,
+        mimetype='application/zip',
+        as_attachment=True,
+        attachment_filename='{}.zip'.format(foldername)
+    )

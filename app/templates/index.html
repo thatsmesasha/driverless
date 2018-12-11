@@ -18,12 +18,19 @@
     } else if ($("#button-folder").attr('aria-pressed') === "true") {
       $("#foldername").prop("disabled", false)
       $("#folder-container").css('display', 'none')
+      $("#download-zip-container").css('display', 'none')
     } else {
       $("#foldername").prop("disabled", true)
       $("#folder-container").css('display', 'block')
+      $("#download-zip-container").css('display', 'block')
       updateFolderStats()
     }
     return true
+  })
+</script>
+<script>
+  $("#download-zip").on("click", function() {
+    window.location = `/control/get-folder-zip?foldername=${document.getElementById('foldername').value}`
   })
 </script>
 <script>
@@ -90,6 +97,12 @@
 
         <div class="list-inline-item">
           <button id="button-folder" type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+        </div>
+
+        <div class="list-inline-item" id="download-zip-container" style="display: none">
+          <button id="download-zip" type="button" class="btn btn-primary" style="background-color: #5a2ab5; border-color: #5a2ab5">
+            Download
+          </button>
         </div>
 
       </div>
