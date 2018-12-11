@@ -24,10 +24,6 @@ def index():
 def about():
     return render_template('/about.html')
 
-@main.route('/settings', methods=['GET'])
-def settings():
-    return render_template('/settings.html')
-
 def gen(camera):
     """Video streaming generator function."""
     while True:
