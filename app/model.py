@@ -57,6 +57,10 @@ class Model:
             try:
                 from aiy.vision import inference
                 Model.inference_engine = inference.InferenceEngine()
+                try:
+                    Model.inference_engine.unload_model('mobilenet_160')
+                except:
+                    pass
                 Model.model_name = Model.inference_engine.load_model(Model.model)
                 Model.good = True
                 self.log('INFO', 'Image inference has started')
@@ -87,6 +91,10 @@ class Model:
         assert len(result.tensors) == 1
         tensor = result.tensors['final_result']
         probs, shape = tensor.data, tensor.shape
+        try:
+            assert shape.depth == len(labels)
+        except:
+            print(shape.depth)
         assert shape.depth == len(labels)
         #0.1 is a threshold, if the score is less then that confidence level is to low
         pairs = [pair for pair in enumerate(probs) if pair[1] > 0.1]
@@ -96,12 +104,24 @@ class Model:
 
     @classmethod
     def _thread(cls):
-        cls.log('INFO', 'Start self-driving')
-        while cls.on:
-            result = cls.inference_engine.camera_inference()
-            direction, probability = cls.process(result)
-            cls.log('INFO', 'Predicted direction {} with probability {:.3f}%'.format(direction, probability * 100))
-            cls.car.drive(direction)
+        try:
+            cls.log('INFO', 'Start self-driving')
+            try:
+                cls.inference_engine.start_camera_inference(cls.model_name)
+            except StartCameraInference:
+                pass
+            while cls.on:
+                result = cls.inference_engine.camera_inference()
+                direction, probability = cls.process(result)
+                cls.log('INFO', 'Predicted direction {} with probability {:.3f}%'.format(direction, probability * 100))
+                cls.car.drive(direction)
+            cls.inference_engine.stop_camera_inference()
+        except Exception as e:
+            cls.log('EXCEPTION', e)
+            try:
+                cls.inference_engine.stop_camera_inference()
+            except:
+                pass
         cls.log('INFO', 'Stopped self-driving')
 
 

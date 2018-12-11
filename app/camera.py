@@ -53,27 +53,31 @@ class Camera(object):
 
     @classmethod
     def _thread(cls):
-        import picamera
-        with picamera.PiCamera() as camera:
-            # camera setup
-            camera.resolution = cls.resolution
+        try:
+            import picamera
+            with picamera.PiCamera() as camera:
+                # camera setup
+                camera.resolution = cls.resolution
 
-            stream = io.BytesIO()
-            for foo in camera.capture_continuous(stream, 'jpeg',
-                                                 use_video_port=True):
-                # store frame
-                stream.seek(0)
-                cls.frame = stream.read()
+                stream = io.BytesIO()
+                for foo in camera.capture_continuous(stream, 'jpeg',
+                                                     use_video_port=True):
+                    # store frame
+                    stream.seek(0)
+                    cls.frame = stream.read()
 
 
 
-                # store only during driving
-                if cls.label:
-                    cls.frames.append((time.time(), cls.frame))
+                    # store only during driving
+                    if cls.label:
+                        cls.frames.append((time.time(), cls.frame))
 
-                # reset stream for next frame
-                stream.seek(0)
-                stream.truncate()
+                    # reset stream for next frame
+                    stream.seek(0)
+                    stream.truncate()
+        except Exception as e:
+            cls.log('EXCEPTION', e)
+            return
 
     @staticmethod
     def save(timestamp, frame, label, foldername):
