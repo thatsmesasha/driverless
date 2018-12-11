@@ -55,7 +55,8 @@ class Car:
 
         cls.log('INFO', 'Driving in direction "{}"'.format(direction))
         cls.speed.value = cls.config[direction]['speed']
-        cls.steering.value = cls.config[direction]['steering']
+        if direction != 'stop':
+            cls.steering.value = cls.config[direction]['steering']
 
     def drive(self, direction):
         if not self.initialize():
